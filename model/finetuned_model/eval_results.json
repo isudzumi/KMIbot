@@ -1,0 +1,10 @@
+{
+    "epoch": 3.0,
+    "eval_loss": 3.2397613525390625,
+    "eval_mem_cpu_alloc_delta": 42119,
+    "eval_mem_cpu_peaked_delta": 164145,
+    "eval_runtime": 1339.761,
+    "eval_samples": 211,
+    "eval_samples_per_second": 0.157,
+    "perplexity": 25.527628916536454
+}
