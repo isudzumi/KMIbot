@@ -31,7 +31,7 @@ def create_lambda_response(statusCode: int):
         'headers': {
             'Content-Type': 'application/json'
         },
-        'body': {}
+        'body': '{}'
     }
 
 def handler(event, context):
