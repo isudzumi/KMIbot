@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from linebot import (
     LineBotApi, WebhookParser
 )
@@ -37,6 +38,7 @@ def create_lambda_response(statusCode: int):
 def handler(event, context):
     try:
         signature = event['headers'].get('x-line-signature')
+        logging.info(signature)
         if (not signature):
             return create_lambda_response(403)
         events = parser.parse(json.dumps(event['body']), signature)
@@ -52,7 +54,9 @@ def handler(event, context):
             input_text = message.removeprefix(MAGIC_KEYWORD)
             if (not input_text):
                 continue
+            logging.info(input_text)
             text = transform.generate(input_text)
+            logging.info(text)
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=text)
@@ -60,6 +64,7 @@ def handler(event, context):
 
         return create_lambda_response(200)
     except InvalidSignatureError:
+        logging.error('Invalid Signature Error')
         return create_lambda_response(400)
 
 if __name__ == '__main__':
