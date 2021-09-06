@@ -1,11 +1,10 @@
 import os
-import base64
-import hashlib
-import hmac
 from linebot import (
-    LineBotApi, WebhookHandler
+    LineBotApi, WebhookParser
 )
-from linebot.models import TextSendMessage
+from linebot.models import (
+    TextSendMessage, MessageEvent, TextMessage
+)
 from linebot.exceptions import (
     InvalidSignatureError
 )
@@ -13,33 +12,51 @@ import transform
 
 ACCESS_TOKEN=os.environ['ACCESS_TOKEN']
 CHANNEL_SECRET=os.environ['CHANNEL_SECRET']
-KEYWORD='亀井！'
+KEYWORD=os.environ['KEYWORD']
 
 line_bot_api = LineBotApi(ACCESS_TOKEN)
-handler = WebhookHandler(CHANNEL_SECRET)
+parser = WebhookParser(CHANNEL_SECRET)
 
-def validate_signature(event):
-    hash = hmac.new(CHANNEL_SECRET.encode('utf-8'),
-            event.body.encode('utf-8'),hashlib.sha256).digest()
-    signature = base64.b64encode(hash)
-    if (event.headers['X-Line-Signature'] != signature):
-        raise InvalidSignatureError
+def create_lambda_response(statusCode: int):
+    """ Create output for Lambda Proxy Integration
+    Generate the output format for Lambda Proxy Integration
+    ref. https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format
 
-def handle(event):
+    :param int statusCode: http status code
+    """
+    return {
+        'isBase64Encoded': False,
+        'statusCode': statusCode,
+        'headers': {
+            'Content-Type': 'application/json'
+        },
+        'body': {}
+    }
+
+def handler(event, context):
     try:
-        validate_signature(event)
-        message = event.message.text
-        if (not message.startswith(KEYWORD)):
-            return {}
-        text = transform.generate(message.removeprefix(KEYWORD))
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=text)
-        )
+        signature = event['headers'].get('x-line-signature')
+        if (not signature):
+            return create_lambda_response(403)
+        events = parser.parse(event.body, signature)
+        
+        for event in events:
+            if not isinstance(event, MessageEvent):
+                continue
+            if not isinstance(event.message, TextMessage):
+                continue
+            message = event.message.text
+            if (not message.startswith(KEYWORD)):
+                continue
+            text = transform.generate(message.removeprefix(KEYWORD))
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=text)
+            )
+
+        return create_lambda_response(200)
     except InvalidSignatureError:
-        return {
-            'statusCode': 400
-        }
+        return create_lambda_response(400)
 
 if __name__ == '__main__':
     pass
