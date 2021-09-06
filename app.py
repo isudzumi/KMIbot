@@ -10,12 +10,12 @@ from linebot.exceptions import (
 )
 import transform
 
-ACCESS_TOKEN=os.environ['ACCESS_TOKEN']
-CHANNEL_SECRET=os.environ['CHANNEL_SECRET']
-KEYWORD=os.environ['KEYWORD']
+LINE_ACCESS_TOKEN=os.environ['LINE_ACCESS_TOKEN']
+LINE_CHANNEL_SECRET=os.environ['LINE_CHANNEL_SECRET']
+MAGIC_KEYWORD=os.environ['MAGIC_KEYWORD']
 
-line_bot_api = LineBotApi(ACCESS_TOKEN)
-parser = WebhookParser(CHANNEL_SECRET)
+line_bot_api = LineBotApi(LINE_ACCESS_TOKEN)
+parser = WebhookParser(LINE_CHANNEL_SECRET)
 
 def create_lambda_response(statusCode: int):
     """ Create output for Lambda Proxy Integration
@@ -46,9 +46,9 @@ def handler(event, context):
             if not isinstance(event.message, TextMessage):
                 continue
             message = event.message.text
-            if (not message.startswith(KEYWORD)):
+            if (not message.startswith(MAGIC_KEYWORD)):
                 continue
-            text = transform.generate(message.removeprefix(KEYWORD))
+            text = transform.generate(message.removeprefix(MAGIC_KEYWORD))
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=text)
