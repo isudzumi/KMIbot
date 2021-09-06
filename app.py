@@ -1,4 +1,5 @@
 import os
+import json
 from linebot import (
     LineBotApi, WebhookParser
 )
@@ -38,7 +39,7 @@ def handler(event, context):
         signature = event['headers'].get('x-line-signature')
         if (not signature):
             return create_lambda_response(403)
-        events = parser.parse(event['body'], signature)
+        events = parser.parse(json.dumps(event['body']), signature)
         
         for event in events:
             if not isinstance(event, MessageEvent):
