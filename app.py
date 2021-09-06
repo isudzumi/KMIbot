@@ -48,7 +48,10 @@ def handler(event, context):
             message = event.message.text
             if (not message.startswith(MAGIC_KEYWORD)):
                 continue
-            text = transform.generate(message.removeprefix(MAGIC_KEYWORD))
+            input_text = message.removeprefix(MAGIC_KEYWORD)
+            if (not input_text):
+                continue
+            text = transform.generate(input_text)
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=text)
