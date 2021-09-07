@@ -22,7 +22,7 @@ parser = WebhookParser(LINE_CHANNEL_SECRET)
 def create_lambda_response(statusCode: int):
     """ Create output for Lambda Proxy Integration
     Generate the output format for Lambda Proxy Integration
-    ref. https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format
+    ref. https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
 
     :param int statusCode: http status code
     """
