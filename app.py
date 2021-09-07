@@ -1,5 +1,4 @@
 import os
-import json
 import logging
 from linebot import (
     LineBotApi,  WebhookHandler
@@ -14,7 +13,7 @@ from linebot.exceptions import (
 import transform
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 LINE_ACCESS_TOKEN=os.environ['LINE_ACCESS_TOKEN']
 LINE_CHANNEL_SECRET=os.environ['LINE_CHANNEL_SECRET']
@@ -64,7 +63,8 @@ def lambda_handler(event, context):
         logger.info(signature)
         if (not signature):
             return create_lambda_response(403)
-        body = json.dumps(event['body'])
+        body = event['body']
+        logger.debug(f'Event body type: {type(body)}')
 
         handler.handle(body, signature)
 
