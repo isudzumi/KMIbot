@@ -57,7 +57,7 @@ def reply_message(line_event):
     )
 
 
-def lambda_handler(event, context):
+def lambda_handler(event, _):
     try:
         signature = event['headers'].get('x-line-signature')
         logger.info(signature)
