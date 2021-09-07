@@ -8,4 +8,4 @@ COPY ./model ./model
 
 COPY *.py   ./
 
-CMD [ "app.handler" ]
+CMD [ "app.lambda_handler" ]
