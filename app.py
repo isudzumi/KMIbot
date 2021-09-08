@@ -13,7 +13,7 @@ from linebot.exceptions import (
 import transform
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.WARNING)
 
 LINE_ACCESS_TOKEN=os.environ['LINE_ACCESS_TOKEN']
 LINE_CHANNEL_SECRET=os.environ['LINE_CHANNEL_SECRET']
